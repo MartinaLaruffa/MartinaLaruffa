@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Name</title>
+<meta name="description" content="Video, installation and painting.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=DM+Mono:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --papel:#eeebe3;
+    --tinta:#1b1a17;
+    --gris:#9a958a;
+    --linea:#1b1a17;
+    --marco:#fbfaf7;
+    --ui:"DM Mono", ui-monospace, monospace;            /* textos pequeños: menú secundario, pies, fichas */
+    --serif:"Courier Prime", "Courier New", monospace;  /* máquina de escribir: nombre, títulos, textos */
+    --mono:"DM Mono", ui-monospace, monospace;
+    --nombre:var(--serif);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--papel);color:var(--tinta);font-family:var(--ui);font-size:15px;line-height:1.4;
+       display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%;height:auto}
+
+  /* ---------- Barra lateral ---------- */
+  .lateral{position:sticky;top:0;height:100vh;padding:28px 24px;display:flex;flex-direction:column;justify-content:space-between;z-index:5}
+  .nombre{font-family:var(--nombre);font-size:24px;letter-spacing:.12em;text-transform:uppercase;font-weight:400;line-height:1.1;display:block}
+  .rol{color:var(--gris);font-size:13px;margin-top:6px}
+  .nav{list-style:none;margin-top:36px}
+  .nav a{font-family:var(--serif);font-size:18px;letter-spacing:.08em;text-transform:uppercase;color:var(--gris);display:inline-block;padding:2px 0;transition:color .15s}
+  .nav a.activo{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
+  .nav a:hover,.nav a.activo{color:var(--tinta)}
+  .nav .sep{height:14px}
+  .pie-lateral{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--gris);display:grid;gap:4px}
+  .pie-lateral a{color:var(--tinta)}
+  .pie-lateral a:hover{text-decoration:underline}
+
+  /* ---------- Contenido ---------- */
+  main{padding:28px 40px 80px 16px;min-width:0}
+  .cat-tit{font-family:var(--serif);font-weight:400;font-size:34px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:28px}
+  .vacio{color:var(--gris)}
+
+  /* Tarjeta de obra (se usa en los tres estilos) */
+  .obra{display:block}
+  .obra img{width:100%}
+  .obra .pie{font-family:var(--mono);font-size:14px;color:var(--tinta);margin-top:12px;transition:color .15s}
+  .obra:hover .pie{text-decoration:underline;text-underline-offset:3px}
+
+  /* ESTILO 1 · Cuadrícula */
+  .grid{columns:3 260px;column-gap:40px}
+  .grid .obra{break-inside:avoid;margin-bottom:56px}
+
+  /* ESTILO 2 · Obra destacada sobre color */
+  body.v-color{--papel:transparent;--tinta:#241307;--gris:#6b3f1d;--linea:#241307;--marco:rgba(255,255,255,.3);
+               background:linear-gradient(180deg,#ecc547 0%,#e98a3a 50%,#e3402a 100%) fixed}
+  .destacada{display:block;max-width:980px;margin:0 auto}
+  .destacada h2{font-weight:400;font-size:clamp(30px,4.6vw,62px);line-height:1.05;letter-spacing:-.015em;margin-top:32px}
+  .mas{font-weight:400;font-size:22px;margin:100px 0 32px}
+
+  /* ESTILO 3 · Collage */
+  .collage{display:grid;grid-template-columns:repeat(12,1fr);column-gap:24px;align-items:start;padding-bottom:40px}
+  .collage .obra{grid-column:var(--c) / span var(--s);margin-top:var(--mt);transform:rotate(var(--r));transition:transform .25s;position:relative}
+  .collage .obra:hover{transform:rotate(0) scale(1.02);z-index:2}
+  .collage .obra img{box-shadow:0 10px 28px rgba(0,0,0,.14)}
+
+  /* Página de proyecto */
+  .proyecto{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:56px}
+  .volver{font-size:13px;color:var(--gris)}
+  .volver:hover{color:var(--tinta)}
+  .proyecto h1{font-family:var(--serif);font-weight:400;font-size:34px;letter-spacing:-.01em;margin:18px 0 14px;line-height:1.1}
+  .proyecto h1 sup{font-size:19px;vertical-align:top;position:relative;top:-2px;margin-left:4px}
+  .sub{font-style:italic;font-size:14px;margin-bottom:24px}
+  .prosa p{font-family:var(--serif);font-size:17px;line-height:1.55;margin-bottom:16px;max-width:62ch}
+  .ficha{margin-top:36px;display:grid;gap:18px;font-size:14px}
+  .ficha dt{font-weight:500}
+  .ficha dd{margin-top:2px}
+  .ficha dd span{display:block}
+  .sigant{display:flex;justify-content:space-between;gap:16px;margin-top:48px;font-size:13px;color:var(--gris);max-width:62ch}
+  .sigant a:hover{color:var(--tinta)}
+  .imagenes{display:grid;gap:36px;align-content:start}
+  .imagenes figure{background:var(--marco);padding:28px}
+  figcaption{font-family:var(--mono);font-size:12px;color:var(--gris);margin-top:14px;text-align:center}
+  .video{position:relative;aspect-ratio:16/9;background:#000}
+  .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+  /* Info */
+  .info{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,.8fr);gap:56px}
+  .info .prosa p{font-size:19px;line-height:1.55}
+  .listas{display:grid;gap:26px;font-size:14px;align-content:start}
+  .listas h3{font-weight:500;font-size:14px;margin-bottom:4px}
+  .listas a{text-decoration:underline}
+
+  /* ---------- Móvil ---------- */
+  .pie-movil{display:none}
+  @media (max-width:820px){
+    body{display:block}
+    .lateral{position:static;height:auto;padding:20px 16px 0}
+    .nav{margin-top:18px;display:flex;flex-wrap:wrap;gap:4px 16px}
+    .nav .sep{display:none}
+    .pie-lateral{display:none}
+    main{padding:28px 16px 40px}
+    .grid{columns:1}
+    .grid .obra{margin-bottom:40px}
+    .collage{display:block}
+    .collage .obra{width:82%;margin:0 0 40px}
+    .collage .obra:nth-child(even){margin-left:auto}
+    .proyecto,.info{grid-template-columns:1fr;gap:32px}
+    .imagenes figure{padding:14px}
+    .info .prosa p{font-size:19px}
+    .mas{margin-top:64px}
+    .pie-movil{display:grid;gap:4px;font-size:12px;color:var(--gris);padding:24px 0 32px;border-top:1px solid var(--linea);margin:0 16px}
+    .pie-movil a{color:var(--tinta)}
+  }
+</style>
+</head>
+<body>
+
+<aside class="lateral">
+  <div>
+    <a class="nombre" href="#/" id="nombre"></a>
+    <p class="rol" id="rol"></p>
+    <ul class="nav" id="nav"></ul>
+  </div>
+  <div class="pie-lateral" id="pie"></div>
+</aside>
+
+<main id="app"></main>
+<div class="pie-movil" id="pie-movil"></div>
+
+<script>
+/* =====================================================================
+   1. TUS DATOS — edita solo esta parte
+   ===================================================================== */
+
+const SITIO = {
+  estilo: "cuadricula",                 // "cuadricula" | "color" | "collage"
+  nombre: "Your Name",
+  rol: "Video · Installation · Painting",
+  email: "hello@yourname.com",
+  instagram: "yourname",                // sin @
+  actualizado: "8 October 2026",
+  relojes: [                            // ciudades del pie, p. ej. { ciudad: "Milan", zona: "Europe/Rome" }. Vacío = sin reloj
+  ],
+  bio: [
+    "[Your Name] is a visual artist working with video, installation and painting.",
+    "A second paragraph about your practice: what interests you, the materials you work with, the themes that run through your work."
+  ],
+  listas: {
+    "Exhibitions": ["2025 Exhibition title, Space, City", "2024 Exhibition title, Gallery, City"],
+    "Residencies & grants": ["2024 Residency name, City"],
+    "Education": ["Academy / school, City"]
+  }
+};
+
+/* Categorías que aparecen en el menú (en este orden) */
+const CATEGORIAS = ["video", "installation", "painting"];
+
+/* Imagen de relleno mientras no tengas las tuyas. Bórrala cuando ya no se use. */
+function ph(color, texto, w = 1200, h = 900) {
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}' viewBox='0 0 ${w} ${h}'><rect width='100%' height='100%' fill='${color}'/><text x='50%' y='50%' fill='#1b1a17' opacity='.5' font-family='monospace' font-size='34' text-anchor='middle' dominant-baseline='middle'>${texto}</text></svg>`;
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+}
+
+/* Cada proyecto:
+   slug       → nombre corto para la URL (sin espacios ni tildes)
+   anio/hasta → años ("present" si sigue en curso)
+   destacado  → true = es la obra grande de la portada en el estilo "color"
+   portada    → imagen que representa la obra en la página de inicio
+   imagenes   → lista de { src, pie } o { vimeo: "ID", pie } o { youtube: "ID", pie }
+   ficha      → bloques de datos (texto o lista)                         */
+const PROYECTOS = [
+  {
+    slug: "ongoing-work",
+    titulo: "Ongoing work (title)",
+    anio: 2024, hasta: "present", destacado: true,
+    categorias: ["video", "installation"],
+    subtitulo: "Video installation, ongoing",
+    portada: ph("#d9cbb0", "installation view"),
+    texto: [
+      "Introductory text about the work. Two or three paragraphs are enough: what it is about, how it began, what it is made of.",
+      "A second paragraph can talk about the process or the context in which it was shown."
+    ],
+    ficha: {
+      "Supported by": ["2025 Grant name, Country"],
+      "Exhibited": ["2025 Exhibition title, Space, City"]
+    },
+    imagenes: [
+      { src: ph("#d9cbb0", "installation view"), pie: "Installation view. Photo: Name" },
+      { src: ph("#c9b99c", "video still"), pie: "Video still" }
+      // { vimeo: "123456789", pie: "Video, 12 min" }
+    ]
+  },
+  {
+    slug: "painting-series",
+    titulo: "Painting series",
+    anio: 2025,
+    categorias: ["painting"],
+    subtitulo: "Oil / watercolour / mixed media on canvas or paper",
+    portada: ph("#a8c5d6", "painting", 900, 1200),
+    texto: ["Short description of the series."],
+    ficha: { "Exhibited": ["2025 Exhibition title, Gallery, City"] },
+    imagenes: [
+      { src: ph("#a8c5d6", "painting 1", 900, 1200), pie: "Title, medium, dimensions, 2025" },
+      { src: ph("#9bb8cb", "painting 2", 900, 1200), pie: "Title, medium, dimensions, 2025" }
+    ]
+  },
+  {
+    slug: "installation",
+    titulo: "Installation (title)",
+    anio: 2023,
+    categorias: ["installation"],
+    subtitulo: "Site-specific installation",
+    portada: ph("#e3a08c", "installation", 1200, 800),
+    texto: ["Description of the installation: space, materials, duration."],
+    ficha: { "Exhibited": ["2023 Exhibition title, Space, City"], "Photos": "Photographer name" },
+    imagenes: [{ src: ph("#e3a08c", "installation view"), pie: "Installation view. Photo: Name" }]
+  },
+  {
+    slug: "video",
+    titulo: "Video (title)",
+    anio: 2022,
+    categorias: ["video"],
+    subtitulo: "Single-channel video, colour, sound, 8 min",
+    portada: ph("#b5c99a", "video still", 1600, 900),
+    texto: ["Description of the video."],
+    ficha: { "Screened at": ["2022 Festival / space, City"] },
+    imagenes: [{ src: ph("#b5c99a", "video still", 1600, 900), pie: "Video still" }]
+  },
+  {
+    slug: "small-paintings",
+    titulo: "Small paintings",
+    anio: 2022,
+    categorias: ["painting"],
+    subtitulo: "Watercolour on paper",
+    portada: ph("#d4b5cf", "painting", 1000, 1000),
+    texto: ["Description of the series."],
+    ficha: {},
+    imagenes: [{ src: ph("#d4b5cf", "painting", 1000, 1000), pie: "Title, medium, dimensions, 2022" }]
+  },
+  {
+    slug: "early-video",
+    titulo: "Early video (title)",
+    anio: 2021,
+    categorias: ["video", "installation"],
+    subtitulo: "Two-channel video installation",
+    portada: ph("#9fb3a8", "video still", 1600, 900),
+    texto: ["Description of the work."],
+    ficha: {},
+    imagenes: [{ src: ph("#9fb3a8", "video still", 1600, 900), pie: "Video still" }]
+  }
+];
+
+/* =====================================================================
+   2. FUNCIONAMIENTO — no hace falta tocar nada de aquí hacia abajo
+   ===================================================================== */
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const slugify = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, "-");
+const cap = s => s[0].toUpperCase() + s.slice(1);
+const fechas = p => p.hasta ? `${p.anio} – ${p.hasta}` : `${p.anio}`;
+const porAnio = l => l.slice().sort((a, b) => b.anio - a.anio);
+
+/* Posiciones del collage: [columna inicial, ancho en columnas (de 12), desplazamiento vertical, giro] */
+const PATRON = [[1, 5, 0, -1.5], [7, 4, 70, 2], [3, 4, -10, 1], [8, 5, 40, -2], [1, 4, 30, 1.5], [6, 3, -20, -1]];
+
+function montarMarco() {
+  document.body.classList.add("v-" + SITIO.estilo);
+  document.title = SITIO.nombre;
+  $("#nombre").textContent = SITIO.nombre;
+  $("#rol").textContent = SITIO.rol;
+  $("#nav").innerHTML =
+    `<li><a href="#/" data-ruta="/">Works</a></li>` +
+    CATEGORIAS.map(c => `<li><a href="#/c/${slugify(c)}" data-ruta="/c/${slugify(c)}">${esc(cap(c))}</a></li>`).join("") +
+    `<li class="sep"></li><li><a href="#/info" data-ruta="/info">Info</a></li>`;
+  const pie = `
+    <a href="mailto:${esc(SITIO.email)}">${esc(SITIO.email)}</a>
+    <a href="https://instagram.com/${esc(SITIO.instagram)}" target="_blank" rel="noopener">Instagram</a>
+    <span class="reloj"></span>
+    <span>Last updated: ${esc(SITIO.actualizado)}</span>`;
+  $("#pie").innerHTML = pie;
+  $("#pie-movil").innerHTML = pie;
+}
+
+function tickReloj() {
+  const t = SITIO.relojes.map(r =>
+    `${new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: r.zona }).format(new Date())} in ${r.ciudad}`
+  ).join(" · ");
+  document.querySelectorAll(".reloj").forEach(el => el.textContent = t ? "It is " + t : "");
+}
+
+function tarjeta(p, estiloExtra = "") {
+  return `
+    <a class="obra" href="#/p/${p.slug}"${estiloExtra}>
+      <img src="${esc(p.portada || "")}" alt="${esc(p.titulo)}" loading="lazy">
+      <p class="pie">${esc(p.titulo)}, ${esc(fechas(p))}</p>
+    </a>`;
+}
+
+const cuadricula = lista => `<div class="grid">${lista.map(p => tarjeta(p)).join("")}</div>`;
+
+function vistaIndice(catSlug) {
+  const cat = CATEGORIAS.find(c => slugify(c) === catSlug);
+  const lista = porAnio(cat ? PROYECTOS.filter(p => p.categorias.includes(cat)) : PROYECTOS);
+  const titulo = cat ? `<h2 class="cat-tit">${esc(cap(cat))}</h2>` : "";
+  let html;
+
+  if (!lista.length) html = `<p class="vacio">Nothing here yet.</p>`;
+
+  else if (SITIO.estilo === "collage") {
+    html = `<div class="collage">${lista.map((p, i) => {
+      const [c, s, mt, r] = PATRON[i % PATRON.length];
+      return tarjeta(p, ` style="--c:${c};--s:${s};--mt:${mt}px;--r:${r}deg"`);
+    }).join("")}</div>`;
+  }
+
+  else if (SITIO.estilo === "color" && !cat) {
+    const d = lista.find(p => p.destacado) || lista[0];
+    html = `
+      <a class="destacada" href="#/p/${d.slug}">
+        <img src="${esc(d.portada || "")}" alt="${esc(d.titulo)}">
+        <h2>${esc(d.titulo)},<br>${esc(fechas(d))}</h2>
+      </a>
+      <h3 class="mas">Selected works ↓</h3>
+      ${cuadricula(lista.filter(p => p !== d))}`;
+  }
+
+  else html = cuadricula(lista);
+
+  $("#app").innerHTML = titulo + html;
+}
+
+function bloqueImagen(im) {
+  let media;
+  if (im.vimeo) media = `<div class="video"><iframe src="https://player.vimeo.com/video/${esc(im.vimeo)}" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe></div>`;
+  else if (im.youtube) media = `<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${esc(im.youtube)}" allowfullscreen loading="lazy"></iframe></div>`;
+  else media = `<img src="${esc(im.src)}" alt="${esc(im.pie || "")}" loading="lazy">`;
+  return `<figure>${media}${im.pie ? `<figcaption>${esc(im.pie)}</figcaption>` : ""}</figure>`;
+}
+
+function vistaProyecto(slug) {
+  const lista = porAnio(PROYECTOS);
+  const i = lista.findIndex(p => p.slug === slug);
+  if (i < 0) return vistaIndice();
+  const p = lista[i], ant = lista[i - 1], sig = lista[i + 1];
+  const ficha = Object.entries({ "Categories": p.categorias.join(", "), ...(p.ficha || {}) })
+    .map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${(Array.isArray(v) ? v : [v]).map(x => `<span>${esc(x)}</span>`).join("")}</dd></div>`)
+    .join("");
+  $("#app").innerHTML = `
+    <article class="proyecto">
+      <div>
+        <a class="volver" href="#/">← Works</a>
+        <h1>${esc(p.titulo)}<sup>${esc(fechas(p))}</sup></h1>
+        ${p.subtitulo ? `<p class="sub">${esc(p.subtitulo)}</p>` : ""}
+        <div class="prosa">${(p.texto || []).map(t => `<p>${esc(t)}</p>`).join("")}</div>
+        <dl class="ficha">${ficha}</dl>
+        <nav class="sigant">
+          ${ant ? `<a href="#/p/${ant.slug}">← ${esc(ant.titulo)}</a>` : "<span></span>"}
+          ${sig ? `<a href="#/p/${sig.slug}">${esc(sig.titulo)} →</a>` : "<span></span>"}
+        </nav>
+      </div>
+      <div class="imagenes">${(p.imagenes || []).map(bloqueImagen).join("")}</div>
+    </article>`;
+  document.title = `${p.titulo} — ${SITIO.nombre}`;
+}
+
+function vistaInfo() {
+  const listas = Object.entries(SITIO.listas)
+    .map(([k, v]) => `<div><h3>${esc(k)}</h3>${v.map(x => `<div>${esc(x)}</div>`).join("")}</div>`).join("");
+  $("#app").innerHTML = `
+    <section class="info">
+      <div class="prosa">${SITIO.bio.map(t => `<p>${esc(t)}</p>`).join("")}</div>
+      <div class="listas">
+        <div><h3>Contact</h3>
+          <div><a href="mailto:${esc(SITIO.email)}">${esc(SITIO.email)}</a></div>
+          <div><a href="https://instagram.com/${esc(SITIO.instagram)}" target="_blank" rel="noopener">@${esc(SITIO.instagram)}</a></div>
+        </div>
+        ${listas}
+      </div>
+    </section>`;
+}
+
+function render() {
+  const ruta = location.hash.slice(1) || "/";
+  const [a, b] = ruta.split("/").filter(Boolean);
+  document.title = SITIO.nombre;
+  if (a === "p") vistaProyecto(b);
+  else if (a === "c") vistaIndice(b);
+  else if (a === "info") vistaInfo();
+  else vistaIndice();
+  const actual = a === "p" ? "/" : "/" + [a, b].filter(Boolean).join("/");
+  document.querySelectorAll("#nav a").forEach(l => l.classList.toggle("activo", l.dataset.ruta === actual));
+  window.scrollTo(0, 0);
+}
+
+montarMarco();
+tickReloj(); setInterval(tickReloj, 20000);
+addEventListener("hashchange", render);
+render();
+</script>
+</body>
+</html>
